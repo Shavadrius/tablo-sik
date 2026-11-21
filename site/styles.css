@@ -1,0 +1,325 @@
+/* ============================================================
+   Табло турнира СИК — экран 1920×1080.
+   Палитра и шрифты — как на лендинге (красный СИК, Oswald + Manrope),
+   но на тёмном фоне: на ТВ/проекторе так лучше читается и не слепит.
+   ============================================================ */
+:root {
+  --red: #8c1515;
+  --red-hi: #d0342c; /* красный, читаемый на тёмном */
+  --bg: #141212;
+  --panel: #1e1b1b;
+  --panel-2: #262222;
+  --line: #322d2d;
+  --text: #f5f2ed;
+  --muted: #8e8882;
+  --dim: #5a5450;
+  --gold: #e3b341;
+  --silver: #c3c7cc;
+  --bronze: #cd8a55;
+  --font-display: "Oswald", "Arial Narrow", sans-serif;
+  --font-body: "Manrope", "Segoe UI", Roboto, sans-serif;
+}
+
+* { box-sizing: border-box; }
+html, body {
+  margin: 0; height: 100%; background: #000; overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+.stage {
+  position: absolute; left: 0; top: 0;
+  width: 1920px; height: 1080px;
+  transform-origin: 0 0;
+  background:
+    radial-gradient(1200px 600px at 85% -10%, rgba(140, 21, 21, 0.22), transparent 60%),
+    var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  display: grid;
+  grid-template-rows: 132px 1fr 96px;
+  grid-template-columns: 100%;
+  overflow: hidden;
+}
+
+/* ---------- Шапка ---------- */
+.top {
+  display: flex; align-items: center; gap: 28px;
+  padding: 0 56px;
+  border-bottom: 1px solid var(--line);
+}
+.top__owl { height: 92px; width: auto; filter: drop-shadow(0 6px 18px rgba(208, 52, 44, 0.35)); }
+.top__titles { flex: 1; min-width: 0; }
+.top__event {
+  font-family: var(--font-display); font-weight: 500;
+  text-transform: uppercase; letter-spacing: 0.12em;
+  font-size: 22px; color: var(--red-hi);
+}
+.top__slide {
+  margin: 4px 0 0;
+  font-family: var(--font-display); font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.01em;
+  font-size: 54px; line-height: 1.05;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.top__slide .sep { color: var(--dim); margin: 0 0.3em; font-weight: 500; }
+.top__slide .sub { color: var(--muted); font-weight: 500; }
+.top__meta { text-align: right; }
+.top__status {
+  font-family: var(--font-display); font-weight: 500; font-size: 24px;
+  text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted);
+}
+.top__status b { color: var(--text); font-weight: 600; }
+.top__clock {
+  font-family: var(--font-display); font-weight: 600; font-size: 56px;
+  line-height: 1; font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Тело ---------- */
+.body { position: relative; padding: 26px 56px 22px; min-height: 0; }
+.slide {
+  position: absolute; inset: 26px 56px 22px;
+  display: flex; flex-direction: column;
+  opacity: 0; transition: opacity 0.6s ease;
+}
+.slide.is-on { opacity: 1; }
+
+/* ---------- Таблица результатов ---------- */
+.tbl { display: flex; flex-direction: column; height: 100%; }
+.tbl__head, .row {
+  display: grid; align-items: center;
+  grid-template-columns: var(--cols);
+  column-gap: 18px;
+}
+.tbl__head {
+  padding: 0 22px 10px;
+  font-family: var(--font-display); font-weight: 500; font-size: 20px;
+  text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted);
+}
+.tbl__head .c-num { text-align: center; }
+.tbl__rows { flex: 1; display: flex; flex-direction: column; gap: var(--gap, 6px); min-height: 0; }
+.row {
+  height: var(--rh, 44px);
+  padding: 0 22px;
+  background: var(--panel);
+  border-radius: 10px;
+  font-size: var(--fs, 26px);
+  transition: transform 0.7s cubic-bezier(.2,.8,.2,1), background-color 0.4s;
+}
+.row:nth-child(even) { background: var(--panel-2); }
+.row.is-new { animation: flash 2.4s ease-out; }
+@keyframes flash { 0%, 30% { background: rgba(208, 52, 44, 0.45); } }
+
+.c-place {
+  font-family: var(--font-display); font-weight: 600;
+  font-size: 1.1em; text-align: center; font-variant-numeric: tabular-nums;
+  color: var(--muted); white-space: nowrap;
+}
+.c-place.p1 { color: var(--gold); } .c-place.p2 { color: var(--silver); } .c-place.p3 { color: var(--bronze); }
+.c-place.small { font-size: 0.85em; }
+.c-team {
+  min-width: 0; display: flex; align-items: center; gap: 14px;
+  font-weight: 700; white-space: nowrap;
+}
+.c-team .name { flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.c-team .org { flex: 1 1 0; min-width: 0; }
+.c-team .org { color: var(--muted); font-weight: 500; font-size: 0.68em; overflow: hidden; text-overflow: ellipsis; }
+.tag {
+  flex: none;
+  font-family: var(--font-display); font-weight: 500; font-size: clamp(10px, calc(var(--fs, 26px) * 0.55), 15px);
+  text-transform: uppercase; letter-spacing: 0.08em;
+  padding: 3px 10px 4px; border-radius: 999px;
+  border: 1px solid var(--line); color: var(--muted);
+}
+.tag--Проф { color: #f0c8c5; border-color: #6b2622; background: rgba(140, 21, 21, 0.25); }
+.tag--Корп { color: #c9d6e6; border-color: #34465c; }
+.tag--Студ { color: #d4e3c4; border-color: #3d5232; }
+.tag--Люб  { color: #e6dcc6; border-color: #5a4d33; }
+
+.c-num {
+  font-family: var(--font-display); font-weight: 500; text-align: center;
+  font-variant-numeric: tabular-nums; color: var(--muted);
+}
+.c-num.empty { color: var(--dim); }
+.c-total {
+  font-family: var(--font-display); font-weight: 700; font-size: 1.3em;
+  text-align: right; font-variant-numeric: tabular-nums;
+}
+
+/* Сетка ответов ЧГК: тур = 12 точек + сумма тура */
+.tour { display: flex; align-items: center; justify-content: center; gap: 12px; }
+.dots { display: grid; grid-template-columns: repeat(var(--q, 12), 1fr); gap: 5px; flex: 1; }
+.dot { height: clamp(8px, calc(var(--rh, 44px) - 16px), 18px); border-radius: 4px; background: #2a2626; }
+.dot.y { background: var(--text); }
+.dot.n { background: transparent; box-shadow: inset 0 0 0 2px #3b3535; }
+.tour__sum {
+  width: 44px; text-align: right;
+  font-family: var(--font-display); font-weight: 500; color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.tour__sum.empty { color: var(--dim); }
+.tbl__head .tour { justify-content: center; }
+
+/* ---------- Общая страница: две панели ---------- */
+.split { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; height: 100%; }
+.split .row, .split .tbl__head { column-gap: 10px; padding: 0 14px; }
+.panel { display: flex; flex-direction: column; min-height: 0; min-width: 0; }
+.panel__title {
+  margin: 0 0 14px; display: flex; align-items: baseline; justify-content: space-between; gap: 16px;
+  font-family: var(--font-display); font-weight: 700; font-size: 34px; text-transform: uppercase;
+  padding-bottom: 10px; border-bottom: 3px solid var(--red);
+}
+.panel__st { font-weight: 500; font-size: 22px; letter-spacing: 0.06em; color: var(--muted); }
+.panel__st b { color: var(--text); font-weight: 600; }
+.split .tbl__head { font-size: 17px; padding-bottom: 8px; }
+.split .tag { font-size: clamp(10px, calc(var(--fs) * 0.5), 13px); padding: 1px 7px 2px; }
+.panel .tbl { flex: 1; min-height: 0; height: auto; }
+
+/* ---------- Партнёры ---------- */
+.ptile {
+  background: #fff; border-radius: 16px;
+  display: flex; align-items: center; justify-content: center; padding: 22px 28px;
+  min-height: 0;
+}
+.ptile img { max-width: 100%; max-height: 100%; object-fit: contain; }
+.ptile.dark { background: #000; }
+
+.empty-state {
+  height: 100%; display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display); font-size: 44px; color: var(--muted); text-transform: uppercase;
+}
+
+/* ---------- Подвал: бегущая лента логотипов ---------- */
+.bottom {
+  display: flex; align-items: center; gap: 24px;
+  padding: 0 0 0 56px;
+  border-top: 1px solid var(--line);
+  background: #0f0d0d;
+}
+.bottom__label {
+  font-family: var(--font-display); font-size: 18px; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--muted);
+}
+.marquee {
+  flex: 1; min-width: 0; overflow: hidden; height: 64px;
+  mask-image: linear-gradient(90deg, transparent, #000 60px, #000 calc(100% - 60px), transparent);
+}
+.marquee__track {
+  display: flex; gap: 18px; height: 100%; width: max-content;
+  animation: scroll var(--dur, 60s) linear infinite;
+}
+.marquee__track .ptile { height: 64px; width: 150px; padding: 8px 14px; border-radius: 10px; }
+@keyframes scroll { to { transform: translateX(-50%); } }
+.bottom__sync { width: 14px; height: 14px; border-radius: 50%; margin: 0 40px 0 0; background: #3c8a4a; }
+.bottom__sync.err { background: var(--red-hi); animation: pulse 1s infinite; }
+.bottom__sync.demo { background: var(--gold); }
+
+
+/* Панель (страница, зачёты, ссылка для ТВ). Спрятана за левым краем,
+   выезжает при наведении на левый нижний угол. Курсор скрыт, пока мышь не двигается. */
+body.idle, body.idle * { cursor: none !important; }
+.navzone { position: absolute; left: 0; bottom: 0; width: 420px; height: 96px; z-index: 5; }
+.viewnav {
+  position: absolute; left: 0; top: 0; bottom: 0; display: flex; align-items: center; gap: 22px;
+  padding: 0 28px 0 56px; background: #0f0d0d; border-right: 1px solid var(--line); white-space: nowrap;
+  transform: translateX(-100%); transition: transform 0.25s ease;
+}
+.navzone:hover .viewnav, .viewnav:focus-within { transform: none; }
+.viewnav .grp { display: flex; gap: 6px; align-items: center; }
+.viewnav a, .viewnav label, .viewnav .copy {
+  font-family: var(--font-display); font-size: 18px; letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--muted); text-decoration: none; padding: 8px 14px; border-radius: 999px; border: 1px solid var(--line);
+  background: none; cursor: pointer;
+}
+.viewnav a.on { color: #fff; background: var(--red); border-color: var(--red); }
+.viewnav label { display: inline-flex; align-items: center; gap: 8px; }
+.viewnav label:has(input:checked) { color: var(--text); border-color: #6b2622; background: rgba(140, 21, 21, 0.25); }
+.viewnav input[type=checkbox] { accent-color: var(--red); width: 18px; height: 18px; margin: 0; }
+.viewnav .copy { color: var(--text); border-color: var(--text); }
+.viewnav .copy:hover { background: var(--text); color: var(--bg); }
+.toast {
+  position: absolute; left: 56px; bottom: calc(100% + 12px); max-width: 1100px; white-space: normal;
+  background: #1e1b1b; border: 1px solid var(--line); border-radius: 12px; padding: 14px 18px;
+  font-size: 18px; line-height: 1.4; color: var(--text); box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+.toast[hidden] { display: none; }
+.toast input { display: block; width: 1000px; margin-top: 8px; font: 16px var(--font-body); padding: 8px 10px;
+  background: #0f0d0d; color: var(--text); border: 1px solid var(--line); border-radius: 8px; }
+
+/* ДОП (перестрелка) рядом с суммой */
+.c-total .dop { font-size: 0.78em; font-weight: 600; color: var(--gold); white-space: nowrap; }
+
+/* Мультиигры: очки в блоке + место в блоке */
+.mcell { display: flex; align-items: baseline; justify-content: center; gap: 10px; }
+.mcell > span:first-child { color: var(--text); }
+.mcell .bp {
+  font-size: 0.72em; color: var(--muted); min-width: 2.8em; text-align: left;
+}
+.mcell .bp::before { content: "м "; color: var(--dim); }
+
+/* Номер команды (стола) — в рамке, чтобы не путать с местом */
+.tnum {
+  flex: none; display: inline-flex; align-items: center; justify-content: center;
+  width: 2.2em; height: 1.45em; margin-right: -2px;
+  font-family: var(--font-display); font-weight: 500; font-size: 0.78em; font-variant-numeric: tabular-nums;
+  color: #d9d4ce; border: 1.5px solid #5a5450; border-radius: 6px; background: rgba(255,255,255,0.04);
+}
+
+/* Медали: кружок цвета медали с местом, зачёт — мелко рядом */
+.c-medals { display: flex; align-items: center; gap: 0.55em; padding-left: 0.4em; white-space: nowrap; }
+.medal { display: inline-flex; align-items: center; gap: 0.3em; }
+.medal i {
+  font-style: normal; font-family: var(--font-display); font-weight: 700; font-size: max(9px, 0.78em);
+  width: 1.55em; height: 1.55em; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  box-shadow: inset 0 -2px 0 rgba(0,0,0,0.25), 0 1px 3px rgba(0,0,0,0.4);
+}
+.m1 i { background: radial-gradient(circle at 35% 30%, #fff1b8, #e3b341 55%, #a7770f); color: #3b2a00; }
+.m2 i { background: radial-gradient(circle at 35% 30%, #ffffff, #c3c7cc 55%, #7d838a); color: #222; }
+.m3 i { background: radial-gradient(circle at 35% 30%, #ffd6b3, #cd8a55 55%, #84491c); color: #2b1404; }
+.mq i { background: none; box-shadow: none; border: 1.5px dashed #8e8882; color: var(--text); }
+.medal b {
+  font-family: var(--font-display); font-weight: 500; font-size: max(8px, 0.58em); letter-spacing: 0.06em; color: var(--muted);
+}
+
+/* Общая страница, МИ: сумма взятых — для сверки */
+.c-num.taken { color: var(--text); }
+.c-num.taken.empty { color: var(--dim); }
+
+/* Ужатая шапка при 22+ командах */
+.stage { transition: none; }
+.stage.compact { grid-template-rows: 84px 1fr 96px; }
+.stage.compact .top__owl { height: 60px; }
+.stage.compact .top__event { font-size: 16px; }
+.stage.compact .top__slide { font-size: 40px; margin-top: 0; }
+.stage.compact .top__status { font-size: 18px; }
+.stage.compact .top__clock { font-size: 42px; }
+.stage.compact .body, .stage.compact .slide { padding-top: 0; }
+.stage.compact .slide { inset: 16px 56px 16px; }
+.stage.compact .panel__title { font-size: 28px; margin-bottom: 8px; padding-bottom: 6px; }
+
+/* Сообщение «нет команд» внутри панели */
+.panel .empty-state { font-size: 30px; text-align: center; }
+
+/* Подписи столбцов масштабируются вместе с таблицей; ровная высота строки */
+.tbl__head { font-size: clamp(9px, calc(var(--fs, 26px) * 0.62), 20px); }
+.split .tbl__head { font-size: clamp(9px, calc(var(--fs, 20px) * 0.62), 17px); }
+.row { line-height: 1.15; }
+
+/* МИ: «из N» под названием блока */
+.tbl__head .mx { display: block; font-size: 0.75em; color: var(--dim); letter-spacing: 0.04em; text-transform: none; }
+
+/* Цифры — Manrope с моноширинными цифрами (в Oswald цифры разной ширины, колонки «гуляли»).
+   Текст и заголовки остаются в Oswald. */
+:root { --font-num: "Manrope", "Segoe UI", Roboto, sans-serif; }
+.c-place, .c-num, .c-total, .tour__sum, .tnum, .medal i, .top__clock, .mcell, .tbl__head .mx {
+  font-family: var(--font-num);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+.c-place { font-weight: 700; }
+.c-num, .tour__sum { font-weight: 600; }
+.c-total { font-weight: 800; font-size: 1.15em; }
+.c-total .dop { font-weight: 700; }
+.tnum { font-weight: 700; font-size: 0.72em; }
+.medal i { font-weight: 800; }
+.top__clock { font-weight: 700; letter-spacing: -0.03em; }

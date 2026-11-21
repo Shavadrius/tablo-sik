@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Основная дисциплина — табло · СИК</title>
+    <link rel="icon" href="assets/logo/sik_owl_red.png" />
+    <link rel="stylesheet" href="fonts.css" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body data-view="chgk">
+    <!-- Сцена 1920×1080, масштабируется под любой экран -->
+    <div class="stage" id="stage">
+      <header class="top">
+        <img class="top__owl" src="assets/logo/sik_owl_red.png" alt="" />
+        <div class="top__titles">
+          <div class="top__event" id="event">Осенний Кубок</div>
+          <h1 class="top__slide" id="slideTitle">&nbsp;</h1>
+        </div>
+        <div class="top__meta">
+          <div class="top__status" id="status"></div>
+          <div class="top__clock" id="clock">--:--</div>
+        </div>
+      </header>
+
+      <main class="body" id="body"></main>
+
+      <footer class="bottom" id="bottom">
+        <div class="bottom__label">Партнёры</div>
+        <div class="marquee"><div class="marquee__track" id="marquee"></div></div>
+        <div class="bottom__sync" id="sync" title="Синхронизация с таблицей"></div>
+      </footer>
+      <!-- Панель: страница, зачёты, ссылка для ТВ. Спрятана за левым краем, выезжает при наведении на левый нижний угол -->
+      <div class="navzone"><nav class="viewnav" id="viewNav">
+        <div class="grp"><a href="#" data-v="all">Общая</a><a href="#chgk" data-v="chgk">ЧГК</a><a href="#multi" data-v="multi">МИ</a></div>
+        <div class="grp cats"><label><input type="checkbox" data-cat="Проф" checked>Проф</label><label><input type="checkbox" data-cat="Люб" checked>Люб</label><label><input type="checkbox" data-cat="Корп" checked>Корп</label><label><input type="checkbox" data-cat="Студ" checked>Студ</label></div>
+        <button type="button" class="copy" id="copyLink">Скопировать ссылку для ТВ</button>
+        <div class="toast" id="toast" hidden></div>
+      </nav></div>
+          </div>
+
+    <script src="config.js"></script>
+    <script src="demo.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
